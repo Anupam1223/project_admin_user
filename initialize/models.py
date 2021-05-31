@@ -22,7 +22,6 @@ class Project(Base):
     date_of_completion = Column(Date, nullable=False)
     budget = Column(Float, nullable=False)
     description_of_project = Column(VARCHAR(400))
-    progress = Column(VARCHAR(10))
 
 
 class Task(Base):
@@ -39,3 +38,4 @@ class Task(Base):
     project_assigned_to = Column(
         String(20), ForeignKey("login.first_name"), nullable=False
     )
+    progress = Column(String(50))
