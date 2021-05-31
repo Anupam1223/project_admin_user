@@ -6,6 +6,8 @@ from user.user import oauth2_scheme, get_user
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 from typing import Dict
+from fastapi.encoders import jsonable_encoder
+from initialize import models
 
 
 router = APIRouter()
@@ -78,7 +80,7 @@ async def view_user_project_as_user(
 
 # ---------------------------------------------------------------------------
 
-
+# ---------Add task by admin------------------------------------------------
 @router.post("/create_task", tags=["Task"])
 async def create_task(
     task: Create_task,
@@ -99,6 +101,21 @@ async def create_task(
     except JWTError:
         raise credentials_exception
     view_user_project = crud.check_admin(db, username=token_data.username)
-    if view_user_project is None:
+    if not view_user_project:
         return {"Error": "User is not Admin"}
     crud.create_task_for_user(db, task)
+    return {"success!!": "Task inserted seccessfully"}
+
+
+# ---------------------------------------------------------------------------
+
+# --------update the status of the task--------------------------------------
+@router.put("/update_progress_of_task/{username}", response_model=Create_task)
+async def update_item(username: str, db: Session = Depends(get_user)):
+    user = (
+        db.query(models.Task)
+        .filter(models.Task.project_assigned_to == username)
+        .first()
+    )
+    user_dict = jsonable_encoder(user)
+    return Create_task(**user_dict)

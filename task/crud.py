@@ -27,13 +27,12 @@ def return_user(db: Session, username):
     user_and_project = (
         db.query(models.Task).filter(models.Task.project_assigned_to == user).first()
     )
-    print(jsonable_encoder(user_and_project))
     return jsonable_encoder(user_and_project)
 
 
 # ------------------------------------------------------------------------------
 
-# -------------------admin can create task---------------------------------------
+# -------------------admin can create task--------------------------------------
 def create_task_for_user(db: Session, create: schema.Create_task):
     db_task = models.Task(
         Task_name=create.Task_name,
