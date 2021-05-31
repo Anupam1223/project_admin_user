@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "task"
+version = "0.1.0"
+description = ""
+authors = ["Anupam1223 <anupam.siwakoti@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.65.1"
+uvicorn = "^0.13.4"
+SQLAlchemy = "^1.4.17"
+mysql = "^0.0.3"
+passlib = "^1.7.4"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+flake8 = "^3.9.2"
+black = "^21.5b1"
+mypy = "^0.812"
+bandit = "^1.7.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
