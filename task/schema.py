@@ -1,12 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional
 
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-
+# -----model to validate task, aslo used for creating task,
+# and for the response----------------------------------------
 class Create_task(BaseModel):
     Task_name: str
     project_name: str
@@ -16,9 +12,18 @@ class Create_task(BaseModel):
     progress: str
 
 
+# ------------------------------------------------------------
+
+# ----To take in progress value that we want to update-------
 class Update_progress(BaseModel):
     progress: str
 
 
+# ------------------------------------------------------------
+
+# ------------For manipulating token data---------------------
 class TokenData(BaseModel):
     username: Optional[str] = None
+
+
+# ------------------------------------------------------------

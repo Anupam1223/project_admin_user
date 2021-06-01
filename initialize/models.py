@@ -2,7 +2,7 @@ from sqlalchemy.sql.sqltypes import Date, Float, VARCHAR
 from .database import Base
 from sqlalchemy import Column, String, Boolean, ForeignKey
 
-
+# ----------------------login ORM table-------------------------------
 class Login(Base):
     __tablename__ = "login"
 
@@ -15,6 +15,8 @@ class Login(Base):
     super_user = Column(Boolean, nullable=False)
 
 
+# --------------------------------------------------------------------
+# -----------------------Project ORM table-----------------------------
 class Project(Base):
     __tablename__ = "project"
 
@@ -24,6 +26,9 @@ class Project(Base):
     description_of_project = Column(VARCHAR(400))
 
 
+# ---------------------------------------------------------------------
+
+# -------------------Task ORM table-------------------------------------
 class Task(Base):
     __tablename__ = "task"
 
@@ -39,3 +44,6 @@ class Task(Base):
         String(20), ForeignKey("login.first_name"), nullable=False
     )
     progress = Column(String(50))
+
+
+# ------------------------------------------------------------------------

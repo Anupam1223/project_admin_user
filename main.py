@@ -5,6 +5,7 @@ import uvicorn
 
 
 app = FastAPI()
+
 app.include_router(user.router)
 app.include_router(task.router)
 
