@@ -38,7 +38,7 @@ def return_user(db: Session, username):
     user_value = (
         db.query(models.Login).filter(models.Login.username == username).first()
     )
-    user = user_value.first_name
+    user = user_value.user_id
     available = user_value.status
     if available:
         user_and_project = (
@@ -59,6 +59,7 @@ def create_task_for_user(db: Session, create: schema.Create_task):
     insert the values brought by this model in our databse table "task"
     """
     db_task = models.Task(
+        Task_id=create.Task_id,
         Task_name=create.Task_name,
         project_name=create.project_name,
         description=create.description,
@@ -76,7 +77,7 @@ def create_task_for_user(db: Session, create: schema.Create_task):
 
 # ---------------------update the progress----------------------------------------
 def update_progress(
-    db: Session, update_progress: schema.Update_progress, Name_Of_Programmer: str
+    db: Session, update_progress: schema.Update_progress, Name_Of_Programmer: int
 ):
     """
     Takes in session and Update_progress schema from schema model and
@@ -85,7 +86,7 @@ def update_progress(
     updated_value = (
         db.query(models.Task)
         .filter(models.Task.project_assigned_to == Name_Of_Programmer)
-        .update({"progress": update_progress})
+        .update({models.Task.progress: update_progress})
     )
     db.commit()
     return updated_value

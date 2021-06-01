@@ -11,6 +11,7 @@ class Token(BaseModel):
 
 # -model used for user related response-------
 class UserResponse(BaseModel):
+    user_id: int
     first_name: str
     last_name: str
     username: str
@@ -23,6 +24,7 @@ class UserResponse(BaseModel):
 
 # -model used for creating user---------------
 class CreateUser(BaseModel):
+    user_id: int
     first_name: str
     last_name: str
     username: str
@@ -36,6 +38,7 @@ class CreateUser(BaseModel):
 
 # --model designed especially to hide password
 class User(BaseModel):
+    user_id: int
     first_name: str
     last_name: str
     username: str

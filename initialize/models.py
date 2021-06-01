@@ -1,4 +1,4 @@
-from sqlalchemy.sql.sqltypes import Date, Float, VARCHAR
+from sqlalchemy.sql.sqltypes import Date, Float, Integer, VARCHAR
 from .database import Base
 from sqlalchemy import Column, String, Boolean, ForeignKey
 
@@ -6,7 +6,8 @@ from sqlalchemy import Column, String, Boolean, ForeignKey
 class Login(Base):
     __tablename__ = "login"
 
-    first_name = Column(String(20), primary_key=True, index=True)
+    user_id = Column(Integer, primary_key=True, index=True)
+    first_name = Column(String(20), nullable=False)
     last_name = Column(String(20), nullable=False)
     username = Column(String(20), nullable=False)
     email = Column(String(20), nullable=False)
@@ -20,6 +21,7 @@ class Login(Base):
 class Project(Base):
     __tablename__ = "project"
 
+    project_id = Column(Integer, primary_key=True, index=True)
     project_name = Column(String(20), primary_key=True, index=True)
     date_of_completion = Column(Date, nullable=False)
     budget = Column(Float, nullable=False)
@@ -32,17 +34,12 @@ class Project(Base):
 class Task(Base):
     __tablename__ = "task"
 
-    Task_name = Column(String(20), primary_key=True, index=True)
-    project_name = Column(
-        String(20), ForeignKey("project.project_name"), nullable=False
-    )
+    Task_id = Column(Integer, primary_key=True, index=True)
+    Task_name = Column(String(20), nullable=False)
+    project_name = Column(Integer, ForeignKey("project.project_id"), nullable=False)
     description = Column(String(400))
-    project_created_by = Column(
-        String(20), ForeignKey("login.first_name"), nullable=False
-    )
-    project_assigned_to = Column(
-        String(20), ForeignKey("login.first_name"), nullable=False
-    )
+    project_created_by = Column(Integer, ForeignKey("login.user_id"), nullable=False)
+    project_assigned_to = Column(Integer, ForeignKey("login.user_id"), nullable=False)
     progress = Column(String(50))
 
 

@@ -4,11 +4,12 @@ from typing import Optional
 # -----model to validate task, aslo used for creating task,
 # and for the response----------------------------------------
 class Create_task(BaseModel):
+    Task_id: int
     Task_name: str
-    project_name: str
+    project_name: int
     description: str
-    project_created_by: str
-    project_assigned_to: str
+    project_created_by: int
+    project_assigned_to: int
     progress: str
 
 

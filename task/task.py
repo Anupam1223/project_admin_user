@@ -95,7 +95,7 @@ async def create_task(
 # --------update the status of the task----------------------------------------
 @router.put("/update_task_progression/{Name_Of_Programmer}", tags=["Task"])
 async def update_task(
-    Name_Of_Programmer: str,
+    Name_Of_Programmer: int,
     update_progress: Update_progress,
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_user),

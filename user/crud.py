@@ -41,6 +41,7 @@ def create_user(db: Session, create: schema.CreateUser):
     """
     hashed_password = get_password_hash(create.password)
     db_user = models.Login(
+        user_id=create.user_id,
         first_name=create.first_name,
         last_name=create.last_name,
         username=create.username,
