@@ -16,5 +16,9 @@ class Create_task(BaseModel):
     progress: str
 
 
+class Update_progress(BaseModel):
+    progress: str
+
+
 class TokenData(BaseModel):
     username: Optional[str] = None

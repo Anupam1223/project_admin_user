@@ -31,7 +31,7 @@ class Task(Base):
     project_name = Column(
         String(20), ForeignKey("project.project_name"), nullable=False
     )
-    description = Column(VARCHAR(400))
+    description = Column(String(400))
     project_created_by = Column(
         String(20), ForeignKey("login.first_name"), nullable=False
     )
