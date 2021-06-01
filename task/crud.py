@@ -65,7 +65,11 @@ def update_progress(
     updated_value = (
         db.query(models.Task)
         .filter(models.Task.project_assigned_to == Name_Of_Programmer)
-        .update({models.Task.progress: update_progress})
+        .update({"progress": update_progress})
     )
+    db.commit()
     print(type(updated_value))
     return updated_value
+
+
+# ---------------------------------------------------------------------------------
