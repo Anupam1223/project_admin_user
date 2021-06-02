@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
+from enum import Enum
 
 # -----model to validate task, aslo used for creating task,
 # and for the response----------------------------------------
@@ -15,9 +16,18 @@ class Create_task(BaseModel):
 
 # ------------------------------------------------------------
 
+# ------------- Stages of progress----------------------------
+class Progress(str, Enum):
+    block = "block"
+    assign = "assign"
+    complete = "complete"
+
+
+# ------------------------------------------------------------
+
 # ----To take in progress value that we want to update-------
 class Update_progress(BaseModel):
-    progress: str
+    progress: Progress
 
 
 # ------------------------------------------------------------

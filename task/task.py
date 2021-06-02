@@ -9,6 +9,7 @@ from typing import Dict
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import engine
 from initialize.database import engine
+from typing import Optional
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -48,7 +49,7 @@ def get_admin_user(
     return view_user_project
 
 
-@router.get("/view_user_project_as_admin", tags=["Task"])
+@router.get("/view_user_project_as_admin", tags=["View Task"])
 async def view_user_project_as_admin(
     user_project: Dict = Depends(get_admin_user),
 ):
@@ -66,7 +67,7 @@ def get_user_project(
     return view_user_project
 
 
-@router.get("/view_user_project_as_user", tags=["Task"])
+@router.get("/view_user_project_as_user", tags=["View Task"])
 async def view_user_project_as_user(
     user_project: Dict = Depends(get_user_project),
 ):
@@ -76,7 +77,7 @@ async def view_user_project_as_user(
 # -----------------------------------------------------------------------------
 
 # ---------Add task by admin---------------------------------------------------
-@router.post("/create_task", tags=["Task"])
+@router.post("/create_task", tags=["Create Task"])
 async def create_task(
     task: Create_task,
     token: str = Depends(oauth2_scheme),
@@ -92,20 +93,31 @@ async def create_task(
 
 # -----------------------------------------------------------------------------
 
-# --------update the status of the task----------------------------------------
-@router.put("/update_task_progression/{Name_Of_Programmer}", tags=["Task"])
+# --------update the status of the task as admin----------------------------------------
+@router.put("/update_task_progression/", tags=["Update Progress"])
 async def update_task(
-    Name_Of_Programmer: int,
     update_progress: Update_progress,
     token: str = Depends(oauth2_scheme),
+    userid_of_programmer: Optional[int] = None,
     db: Session = Depends(get_user),
 ):
 
+    value_to_update = update_progress.progress
     token_info = undo_token(token)
-    view_user_project = crud.check_admin(db, username=token_info)
-    if view_user_project is None:
-        return {"Error": "Only admin is allowed to update"}
-    updated_value = crud.update_progress(db, update_progress, Name_Of_Programmer)
+
+    is_admin = crud.check_admin(db, username=token_info)
+
+    if is_admin is None:
+        user_value = (
+            db.query(models.Login).filter(models.Login.username == token_info).first()
+        )
+        user_id = user_value.user_id
+        updated_value = crud.update_progress(db, value_to_update, user_id)
+        if updated_value:
+            return {"Success!!": "Record updated successfully"}
+        return {"Error!!": "Update terminated"}
+
+    updated_value = crud.update_progress(db, value_to_update, userid_of_programmer)
     if updated_value:
         return {"Success!!": "Record updated successfully"}
     return {"Error!!": "Update terminated"}

@@ -22,7 +22,7 @@ class Project(Base):
     __tablename__ = "project"
 
     project_id = Column(Integer, primary_key=True, index=True)
-    project_name = Column(String(20), primary_key=True, index=True)
+    project_name = Column(String(20), index=True)
     date_of_completion = Column(Date, nullable=False)
     budget = Column(Float, nullable=False)
     description_of_project = Column(VARCHAR(400))
@@ -30,7 +30,7 @@ class Project(Base):
 
 # ---------------------------------------------------------------------
 
-# -------------------Task ORM table-------------------------------------
+# -------------------Task ORM table------------------------------------
 class Task(Base):
     __tablename__ = "task"
 
@@ -43,4 +43,4 @@ class Task(Base):
     progress = Column(String(50))
 
 
-# ------------------------------------------------------------------------
+# ----------------------------------------------------------------------

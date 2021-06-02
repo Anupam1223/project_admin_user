@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.sqltypes import String
 from initialize import models
 from . import schema
 from fastapi.encoders import jsonable_encoder
+from typing import Optional
 
 # ------check and return all the data regarding project and user --------------
 def check_admin(db: Session, username):
@@ -77,7 +79,9 @@ def create_task_for_user(db: Session, create: schema.Create_task):
 
 # ---------------------update the progress----------------------------------------
 def update_progress(
-    db: Session, update_progress: schema.Update_progress, Name_Of_Programmer: int
+    db: Session,
+    update_progress: str,
+    Userid_Of_Programmer: Optional[int] = None,
 ):
     """
     Takes in session and Update_progress schema from schema model and
@@ -85,9 +89,10 @@ def update_progress(
     """
     updated_value = (
         db.query(models.Task)
-        .filter(models.Task.project_assigned_to == Name_Of_Programmer)
+        .filter(models.Task.project_assigned_to == Userid_Of_Programmer)
         .update({models.Task.progress: update_progress})
     )
+
     db.commit()
     return updated_value
 
