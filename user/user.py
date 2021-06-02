@@ -96,7 +96,11 @@ def get_current_user(
         raise credentials_exception
     current_user = crud.pass_user(db, username=token_data.username)
     if current_user is None:
-        raise credentials_exception
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User is not active!!!",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return current_user
 
 

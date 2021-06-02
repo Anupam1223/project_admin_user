@@ -61,9 +61,12 @@ def pass_user(db: Session, username):
     user_value = (
         db.query(models.Login).filter(models.Login.username == username).first()
     )
-    user_dict = jsonable_encoder(user_value)
-    current_user = schema.User(**user_dict)
-    return current_user
+    status = user_value.status
+    if status == True:
+        user_dict = jsonable_encoder(user_value)
+        current_user = schema.User(**user_dict)
+        return current_user
+    return None
 
 
 # -----------------------------------------------------------------------------
