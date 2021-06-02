@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.sqltypes import String
 from initialize import models
 from . import schema
-from fastapi.encoders import jsonable_encoder
 from typing import Optional
 
 # ------check and return all the data regarding project and user --------------
@@ -21,7 +20,7 @@ def check_admin(db: Session, username):
     if admin == True:
         if status == True:
             project_assigned = db.query(models.Task).all()
-            user_dict = jsonable_encoder(project_assigned)
+            user_dict = project_assigned
             return user_dict
         return {"Error!!": "User is not active"}
     return None
@@ -48,7 +47,7 @@ def return_user(db: Session, username):
             .filter(models.Task.project_assigned_to == user)
             .first()
         )
-        return jsonable_encoder(user_and_project)
+        return user_and_project
     return {"Error!!!!": "User is not active"}
 
 
