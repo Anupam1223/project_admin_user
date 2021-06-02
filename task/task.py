@@ -187,7 +187,7 @@ async def view_task_programmer(
     user_names = []
 
     # project_user_dict[], this dictionary is created for returning the obtained values in dictionary
-    project_user_dict = {}
+    project_user_dict = {"Programmer": "Task"}
 
     # we iterate through the is_admin object, which contains all the data or rows from task table
     # we do this to fetch project names and user names
