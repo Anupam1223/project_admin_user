@@ -58,6 +58,11 @@ def create_user(db: Session, create: schema.CreateUser):
 
 # ----------------------------------------------------------------------------
 def pass_user(db: Session, username):
+    """
+    takes in session and username to connect with database,
+    and then returns the information of user, also checks if the
+    user is active or not, if not then returns None
+    """
     user_value = (
         db.query(models.Login).filter(models.Login.username == username).first()
     )

@@ -131,45 +131,91 @@ async def view_task_programmer(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_user),
 ):
+    """
+    takes in token and session to connect with database,
+    if the accessing user is programmer then he/she can see
+    the task they are assigned with, if admin is accessing then
+    he/she can see all the programmer according to their repective
+    project
+    """
+    # token_info() decode the jwt token and return the name of the
+    # user accessing this end-point
     token_info = undo_token(token)
+
+    # checks if the user is admin or not
     is_admin = crud.check_admin(db, username=token_info)
+
     if is_admin is None:
+
+        # return_user() of CRUD returns the object of the accessing
+        # user from our database, and is stored in programmer variacle
         programmer = crud.return_user(db, token_info)
+
+        # retrieve the project id from the object programmer
         project_id = programmer.project_name
+
+        # retrieve the user id from the object programmer
         project_assigned_to = programmer.project_assigned_to
+
+        # query to get the project name from Project ORM table
         project_name = (
             db.query(models.Project)
             .filter(models.Project.project_id == project_id)
             .first()
         )
+
+        # query to get the username name from Login ORM table
         user_name = (
             db.query(models.Login)
             .filter(models.Login.user_id == project_assigned_to)
             .first()
         )
+
+        # returns the username of the user and the task given to him
+        # in the form of dictionary
         return {
             "username": user_name.first_name,
             "project name": project_name.project_name,
         }
 
+    # this part of code runs if the accesing user is admin
+
+    # project_names[], this list is created to store the project names assigned to the programmer
     project_names = []
+
+    # user_names[], this list is created to store the names of the programmer
     user_names = []
+
+    # project_user_dict[], this dictionary is created for returning the obtained values in dictionary
     project_user_dict = {}
 
+    # we iterate through the is_admin object, which contains all the data or rows from task table
+    # we do this to fetch project names and user names
     for programmer in is_admin:
+        # id and work_is_done_by strores the project_id and project_assigned_to from the first index
+        # of is_admin, this value is upgraded to its successor on each round
         id = programmer.project_name
         work_is_done_by = programmer.project_assigned_to
+
+        # runs the query from project table and filters only those projects which are assigned to the
+        # programmer
         project_name = (
             db.query(models.Project).filter(models.Project.project_id == id).first()
         )
+
+        # runs the query from Login table and filters only those Programmers which are assigned to the
+        # task
         user_name = (
             db.query(models.Login)
             .filter(models.Login.user_id == work_is_done_by)
             .first()
         )
+
+        # above obtained project and programmer names are stored in this lists
         project_names.append(project_name.project_name)
         user_names.append(user_name.first_name)
 
+    # merging two list to form a dictionary so that we can return this dictionary
     for key in user_names:
         for value in project_names:
             project_user_dict[key] = value
@@ -177,3 +223,6 @@ async def view_task_programmer(
             break
 
     return project_user_dict
+
+
+# ----------------------------------------------------------------------------------
