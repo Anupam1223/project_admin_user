@@ -1,6 +1,6 @@
 from initialize import models
 from fastapi import Depends, HTTPException, status, APIRouter
-from .schema import Create_task, TokenData, Update_progress
+from .schema import Create_task, TokenData, Update_progress, Progress
 from . import crud
 from user.user import oauth2_scheme, get_user
 from sqlalchemy.orm import Session
@@ -150,6 +150,8 @@ async def update_task(
 
     *authentication is required
     """
+    if update_progress.progress not in Progress.__members__:
+        return {"Error!!": "Choose among 'assign', 'rollback', 'block', 'complete' "}
 
     value_to_update = update_progress.progress
     token_info = undo_token(token)
@@ -161,15 +163,20 @@ async def update_task(
             db.query(models.Login).filter(models.Login.username == token_info).first()
         )
         user_id = user_value.user_id
-        updated_value = crud.update_progress(db, value_to_update, user_id)
-        if updated_value:
-            return {"Success!!": "Record updated successfully"}
-        return {"Error!!": "Update terminated"}
+        user_status = user_value.status
+        if user_status == True:
+            updated_value = crud.update_progress(db, value_to_update, user_id)
+            if updated_value:
+                return {"Success!!": "Record updated successfully"}
+            return {"Error!!": "Update terminated"}
+        return {"Error!!": "User is not active"}
 
     updated_value = crud.update_progress(db, value_to_update, userid_of_programmer)
     if updated_value:
         return {"Success!!": "Record updated successfully"}
-    return {"Error!!": "Update terminated"}
+    return {
+        "Error!!": "Update terminated, if your are admin the pass query parameter (Userid_Of_Programmer) of the user you want to update"
+    }
 
 
 # ------------------------------------------------------------------------------

@@ -21,13 +21,14 @@ class Progress(str, Enum):
     block = "block"
     assign = "assign"
     complete = "complete"
+    rollback = "rollback"
 
 
 # ------------------------------------------------------------
 
 # ----To take in progress value that we want to update-------
 class Update_progress(BaseModel):
-    progress: Progress
+    progress: str
 
 
 # ------------------------------------------------------------
