@@ -18,7 +18,7 @@ router = APIRouter()
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 
-# ---------------common method to undo token------------------------------------
+# ---------------common method to undo and return token------------------------------------
 def undo_token(token):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -42,6 +42,13 @@ def undo_token(token):
 def get_admin_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_user)
 ):
+    """
+    depends upon oauth2_scheme for authorization token sent from post method
+    (verify_stored_user) of user module, also depends upon function(get_user)
+    for setting database connection.checks if the user trying to access the
+    endpoint is admin or not,if not admin then returns error else returns
+    all the record of all the programmer
+    """
     token_info = undo_token(token)
     view_user_project = crud.check_admin(db, username=token_info)
     if view_user_project is None:
@@ -53,6 +60,12 @@ def get_admin_user(
 async def view_user_project_as_admin(
     user_project: Dict = Depends(get_admin_user),
 ):
+    """
+    depends upon get_admin_user, which returns Dictionary value of all the
+    user data present in task table
+
+    *authentication is required
+    """
     return user_project
 
 
@@ -62,6 +75,12 @@ async def view_user_project_as_admin(
 def get_user_project(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_user)
 ):
+    """
+    depends upon oauth2_scheme for authorization token sent from post method
+    (verify_stored_user) of user module, also depends upon function(get_user)
+    for setting database connection
+
+    """
     token_info = undo_token(token)
     view_user_project = crud.return_user(db, username=token_info)
     return jsonable_encoder(view_user_project)
@@ -71,6 +90,11 @@ def get_user_project(
 async def view_user_project_as_user(
     user_project: Dict = Depends(get_user_project),
 ):
+    """
+    depends upon get_user_project, which returns Dictionary value of user data
+
+    *authentication is required
+    """
     return user_project
 
 
@@ -83,6 +107,15 @@ async def create_task(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_user),
 ):
+    """
+    depends upon oauth2_scheme for authorization token sent from post method
+    (verify_stored_user) of user module, also depends upon function(get_user)
+    for setting database connection.
+    task, which is declared as Create_task model, Create_task is a pydantic model
+    inside schema module
+
+    *authentication is required
+    """
     token_info = undo_token(token)
     view_user_project = crud.check_admin(db, username=token_info)
     if view_user_project is None:
@@ -101,6 +134,22 @@ async def update_task(
     userid_of_programmer: Optional[int] = None,
     db: Session = Depends(get_user),
 ):
+    """
+    depends upon oauth2_scheme for authorization token sent from post method
+    (verify_stored_user) of user module, also depends upon function(get_user)
+    for setting database connection.This function works for both admin and programmer
+
+         user
+            *)simply your token will be decoded, check your detail, retrieve user_id and
+            then use ORM query to update the task of this user with the help user_id in
+            task table, you can update only your progress and you dont have to privide
+            query parameter
+         admin
+            *) you pass user_id of the programmer in query paramater and then use this to
+            update the progress of the provided user
+
+    *authentication is required
+    """
 
     value_to_update = update_progress.progress
     token_info = undo_token(token)
@@ -137,6 +186,8 @@ async def view_task_programmer(
     the task they are assigned with, if admin is accessing then
     he/she can see all the programmer according to their repective
     project
+
+    *authentication is required
     """
     # token_info() decode the jwt token and return the name of the
     # user accessing this end-point

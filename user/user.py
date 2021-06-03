@@ -29,6 +29,10 @@ def get_user():
 
 # ---------------------- Creating token -------------------------------------
 def create_access_token(data: dict, expires_delta):
+    """
+    function that takes in data(username) in the form of dict and expiry date
+    of the token. Later it adds expirey date with this dict and then returns it
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -44,6 +48,11 @@ def create_access_token(data: dict, expires_delta):
 # ------Add new user in database----------------------------------------------
 @router.post("/create_newuser/", response_model=schema.UserResponse, tags=["User"])
 def create_newuser(user: schema.CreateUser, db: Session = Depends(get_user)):
+    """
+    this path operation function takes in user data for registration, user is of
+    CreateUser pydantic model, CreateUser is inside schema module. This use create_user
+    function from crud and returns back the value after registration success
+    """
     return crud.create_user(db, user)
 
 
@@ -54,6 +63,13 @@ def create_newuser(user: schema.CreateUser, db: Session = Depends(get_user)):
 async def login_for_access_token(
     form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_user)
 ):
+    """
+    depends upon OAuth2PasswordRequestForm for sending username and password
+    to verify and get token, also depends upon function(get_user)
+    for setting database connection.checks if the user trying to access the
+    endpoint is user or not from login table,if not then returns error else returns
+    token whihc is used to access other endpoint
+    """
     user_value = crud.read_user(db, form.username)
     username = user_value.username
     password = user_value.password
@@ -81,6 +97,13 @@ async def login_for_access_token(
 def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_user)
 ):
+    """
+    depends upon oauth2_scheme for authorization token sent from post method
+    (verify_stored_user), also depends upon function(get_user)
+    for setting database connection, verifies the username and password sent
+    by user with that of login table,if provided credentials matches with that of login
+    then user get access to their profile
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -107,6 +130,12 @@ def get_current_user(
 # ---------Path Operation Function---------------------------------
 @router.get("/get_user/", response_model=schema.User, tags=["User"])
 def view_user_profile(current_user: schema.User = Depends(get_current_user)):
+    """
+    depends upon get_current_user, this returns the value returned by
+    get_current_user to the API
+
+    *authorization is required
+    """
     return current_user
 
 
